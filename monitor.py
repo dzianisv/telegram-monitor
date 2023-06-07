@@ -23,7 +23,7 @@ tg_group = os.environ.get("TELEGRAM_MONITOR_GROUP")
 
 message_regex = re.compile(pattern, re.IGNORECASE)
 
-sound = AudioSegment.from_mp3("alarm.mp3")  # Sound file
+sound = AudioSegment.from_mp3(os.path.join(os.path.dirname(__file__), "alarm.mp3")) # Sound file
 
 app = Client(session_name, app_id, app_hash, phone_number=phone)
 
