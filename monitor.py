@@ -4,6 +4,7 @@ import sys
 import logging
 import re
 import os
+import subprocess
 from pydub import AudioSegment
 from pydub.playback import play
 from pyrogram import Client, filters
@@ -20,6 +21,7 @@ phone = os.environ.get("TELEGRAM_PHONE_NUMBER").replace(" ", "").strip()
 pattern = os.environ.get("TELEGRAM_MESSAGE_REGEX")
 session_name = '.tg'  # Choose a name for your session
 tg_group = os.environ.get("TELEGRAM_MONITOR_GROUP")
+action = os.environ.get("ACTION")
 
 message_regex = re.compile(pattern, re.IGNORECASE)
 
@@ -32,6 +34,8 @@ def handle_message(client, message):
     logger.debug("Received message: %r", message)
     logger.debug("Playing sound...")
     play(sound)
+    if action:
+        subprocess.call(["sh", "-c", action])
 
 logger.info("Starting monitor for %s in %s", pattern, tg_group)
 app.run()
