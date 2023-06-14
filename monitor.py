@@ -30,7 +30,6 @@ app = Client(session_name, app_id, app_hash, phone_number=phone)
 @app.on_message(filters.chat(tg_group) & filters.regex(message_regex))
 def handle_message(client, message):
     logger.debug("Received message: %r", message)
-    logger.info(f'Matched regex in message from @{message.from_user.username}')
     logger.debug("Playing sound...")
     play(sound)
 
