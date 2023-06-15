@@ -5,45 +5,48 @@ import logging
 import re
 import os
 import subprocess
+import time
 from pydub import AudioSegment
 from pydub.playback import play
 from pyrogram import Client, filters
 
-# Logger initalizer
+
 logging.basicConfig(format="%(asctime)s %(message)s")
 logger = logging.getLogger(__file__)
 logger.setLevel(logging.DEBUG)
 logger.addHandler(logging.StreamHandler(sys.stderr))
 
-app_id = os.environ.get("TELEGRAM_API_ID")
-app_hash = os.environ.get("TELEGRAM_API_HASH")
-phone = os.environ.get("TELEGRAM_PHONE_NUMBER").replace(" ", "").strip()
-pattern = os.environ.get("TELEGRAM_MESSAGE_REGEX")
-session_name = '.tg'  # Choose a name for your session
-tg_group = os.environ.get("TELEGRAM_MONITOR_GROUP")
-action = os.environ.get("ACTION")
+class Config:
+    def __init__(self):
+        self.app_id = os.environ.get("TELEGRAM_API_ID")
+        self.app_hash = os.environ.get("TELEGRAM_API_HASH")
+        self.phone = os.environ.get("TELEGRAM_PHONE_NUMBER").replace(" ", "").strip()
+        self.regex = os.environ.get("TELEGRAM_MESSAGE_REGEX")
+        self.session_name = ".tg"
+        self.tg_group = os.environ.get("TELEGRAM_MONITOR_GROUP")
+        self.action = os.environ.get("ACTION")
 
-message_regex = re.compile(pattern, re.IGNORECASE)
+config = Config()
 
-sound = AudioSegment.from_mp3(os.path.join(os.path.dirname(__file__), "alarm.mp3")) # Sound file
+sound_file = AudioSegment.from_mp3(os.path.join(os.path.dirname(__file__), "alarm.mp3"))
+app = Client(config.session_name, config.app_id, config.app_hash, phone_number=config.phone)
+message_regex = re.compile(config.regex, re.IGNORECASE)
 
-app = Client(session_name, app_id, app_hash, phone_number=phone)
-
-@app.on_message(filters.chat(tg_group) & filters.regex(message_regex))
-def handle_message(client, message):
+@app.on_message(filters.chat(config.tg_group) & filters.regex(message_regex))
+def handle_message(_client, message):
     logger.debug("Received message: %r", message)
-    play(sound)
-    if action:
-        subprocess.call(["sh", "-c", action])
+    play(sound_file)
+    if config.action:
+        subprocess.call(["sh", "-c", config.action])
 
 while True:
     try:
-        logger.info("Starting monitor for %s in %s", pattern, tg_group)
+        logger.info("Starting monitor for %s in %s, phone %s, action command \"%s\"", config.regex, config.tg_group, config.phone, config.action)
         app.run()
     except InterruptedError:
         break
     except Exception as e:
         logger.error(e)
-        play(sound)
+        play(sound_file)
         time.sleep(30)
         continue
