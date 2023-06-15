@@ -3,4 +3,4 @@ TELEGRAM_API_HASH=<get it from https://my.telegram.org/auth)>
 TELEGRAM_PHONE_NUMBER=<phone number>
 TELEGRAM_MESSAGE_REGEX=(some|message|^regex$)
 TELEGRAM_MONITOR_GROUP=<nick without @>
-ACTION=terminal-notifier -message "Telegram message matched configured regex"
+ACTION=terminal-notifier -message "Telegram message \"$TELEGRAM_MESSAGE\" matched configured regex"
