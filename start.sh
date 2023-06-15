@@ -1,6 +1,5 @@
 #!/bin/sh
 
-
 set -eu
 
 if ! command -v ffprobe; then
@@ -11,4 +10,4 @@ if ! command -v pipenv; then
     python3 -m pip install pipenv
 fi
 
-pipenv shell ./monitor.py
+python3 -m pipenv run python3 ./monitor.py

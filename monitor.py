@@ -27,7 +27,6 @@ class Config:
         self.action = os.environ.get("ACTION")
 
 config = Config()
-
 sound_file = AudioSegment.from_mp3(os.path.join(os.path.dirname(__file__), "alarm.mp3"))
 app = Client(config.session_name, config.app_id, config.app_hash, phone_number=config.phone)
 message_regex = re.compile(config.regex, re.IGNORECASE)
@@ -37,13 +36,16 @@ def handle_message(_client, message):
     logger.debug("Received message: %r", message)
     play(sound_file)
     if config.action:
-        subprocess.call(["sh", "-c", config.action])
+        start_ts  = time.time()
+        return_code = subprocess.call(["sh", "-c", config.action])
+        logger.info('"%s" return code %d', config.action, return_code)
 
 while True:
     try:
         logger.info("Starting monitor for %s in %s, phone %s, action command \"%s\"", config.regex, config.tg_group, config.phone, config.action)
         app.run()
-    except InterruptedError:
+    except KeyboardInterrupt:
+        logging.info("Terminating...")
         break
     except Exception as e:
         logger.error(e)
