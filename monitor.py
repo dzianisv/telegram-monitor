@@ -41,16 +41,19 @@ message_regex = re.compile(config.regex, re.IGNORECASE)
 def handle_message(_client, message):
     # message https://docs.pyrogram.org/api/types/Message
     logger.debug("Received message: %r", message)
-    play_ogg("match.ogg")
-    play_ogg("alarm.ogg")
 
+    process = None
     if config.action:
         start_ts  = time.time()
         env = os.environ.copy()
         env["TELEGRAM_MESSAGE"] = message.text
+        process = subprocess.Popen(["sh", "-c", config.action], env=env)
 
-        return_code = subprocess.call(["sh", "-c", config.action], env=env)
-        logger.info('"%s" return code %d', config.action, return_code)
+    play_ogg("match.ogg")
+    play_ogg("alarm.ogg")
+
+    if process:
+        process.wait()
 
 while True:
     try:
