@@ -27,14 +27,22 @@ class Config:
         self.action = os.environ.get("ACTION")
 
 config = Config()
-sound_file = AudioSegment.from_mp3(os.path.join(os.path.dirname(__file__), "alarm.mp3"))
+
+
+
+def play_ogg(file: str):
+    sound_file = AudioSegment.from_ogg(os.path.join(os.path.dirname(__file__), file))
+    play(sound_file)
+
 app = Client(config.session_name, config.app_id, config.app_hash, phone_number=config.phone)
 message_regex = re.compile(config.regex, re.IGNORECASE)
 
 @app.on_message(filters.chat(config.tg_group) & filters.regex(message_regex))
 def handle_message(_client, message):
     logger.debug("Received message: %r", message)
-    play(sound_file)
+    play_ogg("match.ogg")
+    play_ogg("alarm.ogg")
+
     if config.action:
         start_ts  = time.time()
         return_code = subprocess.call(["sh", "-c", config.action])
@@ -49,6 +57,6 @@ while True:
         break
     except Exception as e:
         logger.error(e)
-        play(sound_file)
+        play_ogg("error.ogg")
         time.sleep(30)
         continue
