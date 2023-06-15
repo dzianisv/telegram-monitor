@@ -31,7 +31,7 @@ config = Config()
 
 
 def play_ogg(file: str):
-    sound_file = AudioSegment.from_ogg(os.path.join(os.path.dirname(__file__), file))
+    sound_file = AudioSegment.from_ogg(os.path.join(os.path.dirname(__file__), "sounds", file))
     play(sound_file)
 
 app = Client(config.session_name, config.app_id, config.app_hash, phone_number=config.phone)
