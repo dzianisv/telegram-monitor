@@ -1,0 +1,16 @@
+{
+    "monitors": [
+      {
+        "regex": "(regex1|regex2|^даты$)",
+        "chat": "channel1",
+        "actions": [
+          "terminal-notifier -message \"Telegram chat $TELEGRAM_CHAT message '$TELEGRAM_MESSAGE' matched configured regex\""
+        ]
+      }
+    ],
+    "telegram": {
+        "api_id": 12345,
+        "api_hash": "6789",
+        "phone_number": "+0000000000"
+    }
+  }
