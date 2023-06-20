@@ -2,12 +2,21 @@
 
 set -eu
 
-if ! command -v ffprobe; then
-    brew install ffmpeg
-fi
+for cmd in brew apt dnf choco; do
+    if command -v "$cmd" > /dev/null; then
+        PACAKGE_MANAGER=$cmd
+        break
+    fi
+done
 
-if ! command -v pipenv; then
-    python3 -m pip install pipenv
-fi
+_require() {
+    if ! command -v "$@" > /dev/null; then
+        "$PACAKGE_MANAGER" install -y "$@"
+    fi
+}
+
+for package in python3 pipenv ffmpeg; do
+    _require "$package"
+done
 
 pipenv run python3 ./monitor.py
