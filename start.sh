@@ -19,4 +19,9 @@ for package in python3 pipenv ffmpeg; do
     _require "$package"
 done
 
+export PIPENV_VENV_IN_PROJECT=1
+if [ ! -d .venv ]; then
+    pipenv install
+fi
+
 pipenv run python3 ./monitor.py
